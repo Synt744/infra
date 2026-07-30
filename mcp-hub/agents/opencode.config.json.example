@@ -1,0 +1,13 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "mcp": {
+    "hub": {
+      "type": "remote",
+      "url": "http://YOUR_HOST_IP:12008/metamcp/hub/mcp",
+      "headers": {
+        "Authorization": "Bearer sk_mt_YOUR_KEY_HERE"
+      },
+      "enabled": true
+    }
+  }
+}

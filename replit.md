@@ -1,15 +1,15 @@
-# [Project name]
+# MCP Hub
 
-_Replace the heading above with the project's name, and this line with one sentence describing what this app does for users._
+Самохостинговый агрегатор MCP-инструментов на базе MetaMCP. Несколько stdio-серверов (memory, puppeteer и др.) → один Streamable HTTP/SSE endpoint с Bearer-аутентификацией для OpenCode и Hermes.
 
 ## Run & Operate
 
-- `pnpm --filter @workspace/api-server run dev` — run the API server (port 5000)
-- `pnpm run typecheck` — full typecheck across all packages
-- `pnpm run build` — typecheck + build all packages
-- `pnpm --filter @workspace/api-spec run codegen` — regenerate API hooks and Zod schemas from the OpenAPI spec
-- `pnpm --filter @workspace/db run push` — push DB schema changes (dev only)
-- Required env: `DATABASE_URL` — Postgres connection string
+- `pnpm --filter @workspace/api-server run dev` — запустить API-сервер (порт 5000)
+- `pnpm run typecheck` — полный typecheck по всем пакетам
+- `pnpm run build` — typecheck + сборка всех пакетов
+- `pnpm --filter @workspace/api-spec run codegen` — перегенерировать API-хуки из OpenAPI-спека
+- `pnpm --filter @workspace/db run push` — применить изменения схемы БД (dev only)
+- Required env: `DATABASE_URL` — строка подключения к Postgres
 
 ## Stack
 
@@ -19,27 +19,38 @@ _Replace the heading above with the project's name, and this line with one sente
 - Validation: Zod (`zod/v4`), `drizzle-zod`
 - API codegen: Orval (from OpenAPI spec)
 - Build: esbuild (CJS bundle)
+- MCP Hub: MetaMCP (Docker Compose) в `mcp-hub/`
 
 ## Where things live
 
-_Populate as you build — short repo map plus pointers to the source-of-truth file for DB schema, API contracts, theme files, etc._
+- `mcp-hub/` — Docker Compose стек MetaMCP + конфиги агентов + инструкции
+- `mcp-hub/README.md` — инструкция для человека (пошаговый деплой)
+- `mcp-hub/AGENTS.md` — инструкция для агентов (архитектурные решения, правила правок)
+- `artifacts/api-server/` — Express API-сервер
+- `artifacts/mockup-sandbox/` — Canvas/дизайн-окружение
 
 ## Architecture decisions
 
-_Populate as you build — non-obvious choices a reader couldn't infer from the code (3-5 bullets)._
+- **MetaMCP вместо mcp-proxy/supergateway** — прокси пробрасывает только один stdio-сервер без агрегации; MetaMCP собирает несколько тулов в один endpoint.
+- **Изолированный Postgres** — `metamcp-pg` отдельный контейнер, не трогает боевой кластер.
+- **Streamable HTTP `/mcp` вместо SSE `/sse`** — в hermes-agent открытый баг на SSE (теряет session ID); `/mcp` надёжнее для обоих агентов.
+- **`APP_URL` — реальный IP, не localhost** — MetaMCP валидирует CORS по этому URL.
 
 ## Product
 
-_Describe the high-level user-facing capabilities of this app once they exist._
+Инфраструктурный хаб: общая память и инструменты для агентов OpenCode и Hermes через единый авторизованный MCP-endpoint.
 
 ## User preferences
 
-_Populate as you build — explicit user instructions worth remembering across sessions._
+_Populate as you build._
 
 ## Gotchas
 
-_Populate as you build — sharp edges, "always run X before Y" rules._
+- `APP_URL` в `.env` должен быть реальным IP/hostname, не `localhost` — иначе CORS-ошибки.
+- Используй `/mcp` endpoint, не `/sse` — баг в hermes-agent на SSE-транспорте.
+- Не трогай `.env` — только `.env.example`.
 
 ## Pointers
 
 - See the `pnpm-workspace` skill for workspace structure, TypeScript setup, and package details
+- `mcp-hub/AGENTS.md` — правила для агентов по работе с MCP-хабом

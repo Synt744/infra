@@ -1,0 +1,7 @@
+mcp_servers:
+  hub:
+    # Используй /mcp (Streamable HTTP), НЕ /sse!
+    # В hermes-agent открытый баг на SSE: теряет session ID → "Missing session ID"
+    url: "http://YOUR_HOST_IP:12008/metamcp/hub/mcp"
+    headers:
+      Authorization: "Bearer sk_mt_YOUR_KEY_HERE"
