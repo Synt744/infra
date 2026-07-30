@@ -1,0 +1,26 @@
+---
+# profiles/workstation.yml — Домашняя рабочая станция
+# Полный набор компонентов: KDE, Docker, AI, Obsidian
+
+- import_playbook: ansible/playbooks/workstation.yml
+  vars:
+    install_common: true
+    install_packages: true
+    install_git: true
+    install_ssh: true
+    install_network: true
+    install_docker: true
+    install_dockge: true
+    install_metamcp: true
+    install_desktop: true
+    install_kde: true
+    install_fonts: true
+    install_flatpak: true
+    install_obsidian: true
+    install_ai: true
+    install_hermes: true
+    install_opencode: true
+    install_security: true
+    install_firewall: true
+    install_backup: false
+    install_updates: true

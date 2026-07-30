@@ -1,0 +1,26 @@
+---
+# profiles/raspberry.yml — Raspberry Pi (ARM, минимальный набор)
+# Без GUI, без тяжёлых AI-инструментов; только base + docker + security
+
+- import_playbook: ansible/playbooks/workstation.yml
+  vars:
+    install_common: true
+    install_packages: true
+    install_git: true
+    install_ssh: true
+    install_network: true
+    install_docker: true
+    install_dockge: true
+    install_metamcp: false
+    install_desktop: false
+    install_kde: false
+    install_fonts: false
+    install_flatpak: false
+    install_obsidian: false
+    install_ai: false
+    install_hermes: false
+    install_opencode: false
+    install_security: true
+    install_firewall: true
+    install_backup: true
+    install_updates: true

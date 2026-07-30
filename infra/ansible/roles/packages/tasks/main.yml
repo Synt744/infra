@@ -1,0 +1,35 @@
+---
+# packages — установка системных пакетов
+
+- name: Update apt cache
+  ansible.builtin.apt:
+    update_cache: true
+    cache_valid_time: 3600
+  tags: [packages]
+
+- name: Install system packages
+  ansible.builtin.apt:
+    name: "{{ packages_system }}"
+    state: present
+  tags: [packages]
+
+- name: Install development tools
+  ansible.builtin.apt:
+    name: "{{ packages_dev }}"
+    state: present
+  when: install_dev_tools | default(true)
+  tags: [packages, dev]
+
+- name: Remove unwanted packages
+  ansible.builtin.apt:
+    name: "{{ packages_remove }}"
+    state: absent
+    purge: true
+  when: packages_remove | length > 0
+  tags: [packages]
+
+- name: Run apt autoremove
+  ansible.builtin.apt:
+    autoremove: true
+  changed_when: false
+  tags: [packages]

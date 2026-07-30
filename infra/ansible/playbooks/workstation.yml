@@ -1,0 +1,105 @@
+---
+# workstation.yml — мастер-плейбук (вызывается из profiles/)
+# Не запускай напрямую. Используй profiles/workstation.yml
+# Здесь только оркестрация ролей в правильном порядке.
+
+- name: Workstation provisioning
+  hosts: workstation
+  become: true
+  gather_facts: true
+
+  pre_tasks:
+    - name: Verify Ansible version
+      ansible.builtin.assert:
+        that: ansible_version.full is version('2.14', '>=')
+        msg: "Требуется Ansible 2.14+. Установлено: {{ ansible_version.full }}"
+      tags: always
+
+    - name: Verify target OS
+      ansible.builtin.assert:
+        that: ansible_distribution in ['Debian', 'Ubuntu']
+        msg: "Поддерживается только Debian/Ubuntu. Обнаружено: {{ ansible_distribution }}"
+      tags: always
+
+  roles:
+    # ── Фундамент ────────────────────────────────────────────────────────────
+    - role: common
+      tags: [common, base]
+      when: install_common | default(true)
+
+    - role: packages
+      tags: [packages, base]
+      when: install_packages | default(true)
+
+    - role: git
+      tags: [git, base]
+      when: install_git | default(true)
+
+    - role: ssh
+      tags: [ssh, base, security]
+      when: install_ssh | default(true)
+
+    - role: network
+      tags: [network, base]
+      when: install_network | default(true)
+
+    # ── Docker-платформа ─────────────────────────────────────────────────────
+    - role: docker
+      tags: [docker]
+      when: install_docker | default(true)
+
+    - role: dockge
+      tags: [docker, dockge]
+      when: install_docker | default(true) and install_dockge | default(true)
+
+    - role: metamcp
+      tags: [docker, metamcp, ai]
+      when: install_docker | default(true) and install_metamcp | default(true)
+
+    # ── Рабочий стол ─────────────────────────────────────────────────────────
+    - role: fonts
+      tags: [desktop, fonts]
+      when: install_desktop | default(true) and install_fonts | default(true)
+
+    - role: kde
+      tags: [desktop, kde]
+      when: install_desktop | default(true) and install_kde | default(true)
+
+    - role: flatpak
+      tags: [desktop, flatpak]
+      when: install_desktop | default(true) and install_flatpak | default(true)
+
+    - role: obsidian
+      tags: [desktop, obsidian]
+      when: install_desktop | default(true) and install_obsidian | default(true)
+
+    # ── AI-инструменты ───────────────────────────────────────────────────────
+    - role: ai
+      tags: [ai]
+      when: install_ai | default(true)
+
+    - role: hermes
+      tags: [ai, hermes]
+      when: install_ai | default(true) and install_hermes | default(true)
+
+    - role: opencode
+      tags: [ai, opencode]
+      when: install_ai | default(true) and install_opencode | default(true)
+
+    # ── Безопасность ─────────────────────────────────────────────────────────
+    - role: security
+      tags: [security]
+      when: install_security | default(true)
+
+    - role: firewall
+      tags: [security, firewall]
+      when: install_security | default(true) and install_firewall | default(true)
+
+    # ── Обслуживание ─────────────────────────────────────────────────────────
+    - role: backup
+      tags: [backup]
+      when: install_backup | default(false)
+
+    - role: updates
+      tags: [updates]
+      when: install_updates | default(true)

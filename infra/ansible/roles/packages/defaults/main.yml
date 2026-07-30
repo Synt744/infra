@@ -1,0 +1,52 @@
+---
+packages_system:
+  - vim
+  - neovim
+  - zsh
+  - tmux
+  - fzf
+  - bat
+  - ripgrep
+  - fd-find
+  - eza
+  - ncdu
+  - duf
+  - wget
+  - curl
+  - rsync
+  - jq
+  - yq
+  - htop
+  - btop
+  - iotop
+  - lsof
+  - strace
+  - tcpdump
+  - nmap
+  - net-tools
+  - dnsutils
+  - iproute2
+  - iptables
+  - ufw
+  - fail2ban
+  - unzip
+  - zip
+  - p7zip-full
+  - tar
+  - xz-utils
+  - openssl
+  - gnupg
+  - pass
+  - pinentry-curses
+
+packages_dev:
+  - build-essential
+  - cmake
+  - pkg-config
+  - libssl-dev
+  - libffi-dev
+  - python3-dev
+  - python3-pip
+  - pipx
+
+packages_remove: []

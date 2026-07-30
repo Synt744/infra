@@ -1,0 +1,26 @@
+---
+# profiles/server.yml — Headless сервер (без GUI)
+# Docker + MetaMCP + security + backup; без KDE/Obsidian
+
+- import_playbook: ansible/playbooks/workstation.yml
+  vars:
+    install_common: true
+    install_packages: true
+    install_git: true
+    install_ssh: true
+    install_network: true
+    install_docker: true
+    install_dockge: true
+    install_metamcp: true
+    install_desktop: false
+    install_kde: false
+    install_fonts: false
+    install_flatpak: false
+    install_obsidian: false
+    install_ai: true
+    install_hermes: true
+    install_opencode: true
+    install_security: true
+    install_firewall: true
+    install_backup: true
+    install_updates: true

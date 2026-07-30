@@ -1,0 +1,38 @@
+---
+# =============================================================================
+# vault.yml.example — Шаблон для секретов
+#
+# Использование:
+#   cp vault.yml.example vault.yml
+#   # Заполни значения
+#   ansible-vault encrypt vault.yml
+#   # Расшифровать для редактирования:
+#   ansible-vault edit vault.yml
+# =============================================================================
+
+# ─── Git ─────────────────────────────────────────────────────────────────────
+vault_git_user_name: "Your Name"
+vault_git_user_email: "your@email.com"
+
+# ─── MetaMCP ─────────────────────────────────────────────────────────────────
+# Сгенерируй: openssl rand -hex 16
+vault_metamcp_postgres_password: "CHANGE_ME"
+# Сгенерируй: openssl rand -hex 32
+vault_metamcp_better_auth_secret: "CHANGE_ME"
+
+# ─── MCP Hub токены ──────────────────────────────────────────────────────────
+# Токен из MetaMCP UI (Endpoints → API Key)
+vault_hermes_mcp_hub_token: "sk_mt_CHANGE_ME"
+vault_opencode_mcp_hub_token: "sk_mt_CHANGE_ME"
+
+# ─── Backup ──────────────────────────────────────────────────────────────────
+# Путь к Restic/Borg репозиторию (локальный или sftp://...)
+vault_backup_repository: "sftp:user@host:/path/to/backup"
+vault_backup_password: "CHANGE_ME"
+
+# ─── SSH ─────────────────────────────────────────────────────────────────────
+# При необходимости — парольная фраза для SSH-ключа
+vault_ssh_key_passphrase: ""
+
+# ─── Obsidian ────────────────────────────────────────────────────────────────
+# Пароль шифрования vault НЕ хранится в репо — вводится вручную при монтировании

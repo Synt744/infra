@@ -1,0 +1,188 @@
+---
+# =============================================================================
+# group_vars/all/main.yml — Единственный источник истины для всех переменных
+# Секреты (пароли, ключи, токены) хранятся ТОЛЬКО в vault.yml
+# =============================================================================
+
+# ─── Пользователь ────────────────────────────────────────────────────────────
+workstation_user: "{{ ansible_user_id }}"
+workstation_home: "/home/{{ workstation_user }}"
+workstation_shell: "/bin/zsh"
+
+# ─── Система ──────────────────────────────────────────────────────────────────
+system_locale: "ru_RU.UTF-8"
+system_timezone: "Europe/Moscow"
+system_hostname: "workstation"
+
+# ─── Пути ────────────────────────────────────────────────────────────────────
+stacks_dir: "/opt/stacks"
+data_dir: "/opt/data"
+backups_dir: "/opt/backups"
+cache_dir: "/opt/cache"
+tmp_dir: "/opt/tmp"
+
+# ─── Переключатели компонентов ────────────────────────────────────────────────
+install_common: true
+install_packages: true
+install_git: true
+install_ssh: true
+install_network: true
+install_docker: true
+install_dockge: true
+install_metamcp: true
+install_desktop: true
+install_kde: true
+install_fonts: true
+install_flatpak: true
+install_obsidian: true
+install_ai: true
+install_hermes: true
+install_opencode: true
+install_security: true
+install_firewall: true
+install_backup: false       # требует настройки бэкап-хоста
+install_updates: true
+
+# ─── Git ─────────────────────────────────────────────────────────────────────
+git_user_name: "{{ vault_git_user_name }}"
+git_user_email: "{{ vault_git_user_email }}"
+git_default_branch: "main"
+git_editor: "nvim"
+git_pull_rebase: true
+git_sign_commits: false     # включи если используешь GPG
+
+# ─── SSH ─────────────────────────────────────────────────────────────────────
+ssh_key_type: "ed25519"
+ssh_key_bits: 4096          # используется для RSA fallback
+ssh_public_keys: []         # список authorized_keys для добавления
+ssh_port: 22
+ssh_permit_root_login: "no"
+ssh_password_auth: "no"
+
+# ─── Network ─────────────────────────────────────────────────────────────────
+network_manager_enabled: true
+network_interfaces_purge: true   # отключает /etc/network/interfaces
+
+# ─── Docker ──────────────────────────────────────────────────────────────────
+docker_edition: "ce"
+docker_users:
+  - "{{ workstation_user }}"
+docker_compose_version: "latest"   # определяется docker cli plugin
+docker_daemon_options:
+  log-driver: "json-file"
+  log-opts:
+    max-size: "10m"
+    max-file: "3"
+
+# ─── Dockge ──────────────────────────────────────────────────────────────────
+dockge_version: "latest"
+dockge_port: 5001
+dockge_stack_dir: "{{ stacks_dir }}"
+dockge_data_dir: "{{ data_dir }}/dockge"
+
+# ─── MetaMCP ─────────────────────────────────────────────────────────────────
+metamcp_version: "latest"
+metamcp_port: 12008
+metamcp_stack_dir: "{{ stacks_dir }}/metamcp"
+metamcp_data_dir: "{{ data_dir }}/metamcp"
+# APP_URL должен быть реальным IP/hostname, не localhost
+metamcp_app_url: "http://{{ ansible_default_ipv4.address }}:{{ metamcp_port }}"
+metamcp_postgres_user: "metamcp_user"
+metamcp_postgres_db: "metamcp_db"
+# Пароли — в vault.yml:
+#   vault_metamcp_postgres_password
+#   vault_metamcp_better_auth_secret
+
+# ─── KDE ─────────────────────────────────────────────────────────────────────
+kde_theme: "org.kde.breezedark.desktop"
+kde_icon_theme: "Papirus-Dark"
+kde_cursor_theme: "breeze_cursors"
+kde_font_general: "Noto Sans 10"
+kde_font_fixed: "JetBrains Mono 10"
+kde_wallpaper: ""    # абсолютный путь к файлу или пусто
+kde_sddm_theme: "breeze"
+kde_konsole_profile: "default"
+
+# ─── Fonts ───────────────────────────────────────────────────────────────────
+fonts_nerd_fonts:
+  - "JetBrainsMono"
+  - "FiraCode"
+fonts_system_packages:
+  - fonts-noto
+  - fonts-noto-cjk
+  - fonts-noto-color-emoji
+
+# ─── Flatpak ─────────────────────────────────────────────────────────────────
+flatpak_apps:
+  - com.spotify.Client
+  - com.discordapp.Discord
+  - org.telegram.desktop
+
+# ─── Obsidian ────────────────────────────────────────────────────────────────
+obsidian_version: "latest"
+obsidian_vault_encrypted_dir: "{{ data_dir }}/obsidian-vault-enc"
+obsidian_vault_mount_dir: "{{ workstation_home }}/Obsidian"
+obsidian_crypto_backend: "gocryptfs"   # gocryptfs | cryfs
+obsidian_autoclose_on_exit: true
+obsidian_use_kdialog: true             # kdialog для KDE, zenity fallback
+
+# ─── AI — базовые инструменты ────────────────────────────────────────────────
+nodejs_version: "22"       # LTS
+python_version: "3.12"
+uv_install: true
+pipx_install: true
+bun_install: false         # включи если нужно
+
+# ─── Hermes ──────────────────────────────────────────────────────────────────
+hermes_config_dir: "{{ workstation_home }}/.hermes"
+hermes_mcp_hub_url: "http://{{ ansible_default_ipv4.address }}:{{ metamcp_port }}/metamcp/hub/mcp"
+# hermes_mcp_hub_token — в vault.yml
+
+# ─── OpenCode ────────────────────────────────────────────────────────────────
+opencode_config_dir: "{{ workstation_home }}/.config/opencode"
+opencode_mcp_hub_url: "http://{{ ansible_default_ipv4.address }}:{{ metamcp_port }}/metamcp/hub/mcp"
+# opencode_mcp_hub_token — в vault.yml
+
+# ─── Security ────────────────────────────────────────────────────────────────
+security_disable_root_login: true
+security_install_fail2ban: true
+security_install_rkhunter: false   # тяжёлый, включай осознанно
+security_umask: "027"
+
+# ─── Firewall (UFW) ──────────────────────────────────────────────────────────
+firewall_default_incoming: "deny"
+firewall_default_outgoing: "allow"
+firewall_rules:
+  - port: "{{ ssh_port }}"
+    proto: tcp
+    rule: allow
+    comment: "SSH"
+  - port: "{{ metamcp_port }}"
+    proto: tcp
+    rule: allow
+    comment: "MetaMCP"
+  - port: "{{ dockge_port }}"
+    proto: tcp
+    rule: allow
+    comment: "Dockge"
+
+# ─── Backup (Restic) ─────────────────────────────────────────────────────────
+backup_tool: "restic"     # restic | borg
+backup_schedule: "daily"  # daily | weekly
+backup_keep_daily: 7
+backup_keep_weekly: 4
+backup_keep_monthly: 3
+backup_paths:
+  - "{{ workstation_home }}"
+  - "{{ data_dir }}"
+backup_excludes:
+  - "{{ cache_dir }}"
+  - "{{ tmp_dir }}"
+  - "{{ workstation_home }}/.cache"
+  - "{{ workstation_home }}/.local/share/Trash"
+# backup_repository, vault_backup_password — в vault.yml
+
+# ─── Updates ─────────────────────────────────────────────────────────────────
+updates_unattended_security: true
+updates_auto_reboot: false
+updates_auto_reboot_time: "03:00"

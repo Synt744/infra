@@ -1,0 +1,93 @@
+---
+# common — базовые настройки системы
+# Запускается первым. Не зависит ни от каких других ролей.
+
+- name: Install essential base packages
+  ansible.builtin.apt:
+    name:
+      - curl
+      - wget
+      - ca-certificates
+      - gnupg
+      - lsb-release
+      - apt-transport-https
+      - software-properties-common
+      - sudo
+      - unzip
+      - zip
+      - rsync
+      - htop
+      - tree
+      - jq
+      - make
+    state: present
+    update_cache: true
+  tags: [common, packages]
+
+- name: Set system locale
+  ansible.builtin.debconf:
+    name: locales
+    question: locales/default_environment_locale
+    value: "{{ system_locale }}"
+    vtype: select
+  notify: Reconfigure locales
+  tags: [common, locale]
+
+- name: Ensure locale is present in /etc/locale.gen
+  ansible.builtin.lineinfile:
+    path: /etc/locale.gen
+    regexp: "^#?\\s*{{ system_locale }}"
+    line: "{{ system_locale }} UTF-8"
+    state: present
+  notify: Reconfigure locales
+  tags: [common, locale]
+
+- name: Set system timezone
+  community.general.timezone:
+    name: "{{ system_timezone }}"
+  tags: [common, timezone]
+
+- name: Set system hostname
+  ansible.builtin.hostname:
+    name: "{{ system_hostname }}"
+    use: systemd
+  tags: [common, hostname]
+
+- name: Update /etc/hosts with hostname
+  ansible.builtin.lineinfile:
+    path: /etc/hosts
+    regexp: "^127\\.0\\.1\\.1"
+    line: "127.0.1.1  {{ system_hostname }}"
+    state: present
+  tags: [common, hostname]
+
+- name: Create /opt directory layout
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+  loop:
+    - "{{ stacks_dir }}"
+    - "{{ data_dir }}"
+    - "{{ backups_dir }}"
+    - "{{ cache_dir }}"
+    - "{{ tmp_dir }}"
+  tags: [common, dirs]
+
+- name: Ensure user home subdirectories exist
+  ansible.builtin.file:
+    path: "{{ workstation_home }}/{{ item }}"
+    state: directory
+    owner: "{{ workstation_user }}"
+    group: "{{ workstation_user }}"
+    mode: "0755"
+  loop:
+    - .local/bin
+    - .config
+    - .ssh
+    - Projects
+    - Downloads
+  become: false
+  tags: [common, dirs]
