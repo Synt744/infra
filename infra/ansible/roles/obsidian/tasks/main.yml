@@ -1,0 +1,91 @@
+---
+# obsidian — Obsidian + gocryptfs/CryFS + автозапуск с монтированием
+
+- name: Install gocryptfs
+  ansible.builtin.apt:
+    name: gocryptfs
+    state: present
+  when: obsidian_crypto_backend == 'gocryptfs'
+  tags: [obsidian]
+
+- name: Install CryFS
+  ansible.builtin.apt:
+    name: cryfs
+    state: present
+  when: obsidian_crypto_backend == 'cryfs'
+  tags: [obsidian]
+
+- name: Install kdialog (for KDE password prompt)
+  ansible.builtin.apt:
+    name: kdialog
+    state: present
+  when: obsidian_use_kdialog | default(true)
+  tags: [obsidian]
+
+- name: Create encrypted vault directory
+  ansible.builtin.file:
+    path: "{{ obsidian_vault_encrypted_dir }}"
+    state: directory
+    owner: "{{ workstation_user }}"
+    group: "{{ workstation_user }}"
+    mode: "0700"
+  become: false
+  tags: [obsidian]
+
+- name: Create vault mount point
+  ansible.builtin.file:
+    path: "{{ obsidian_vault_mount_dir }}"
+    state: directory
+    owner: "{{ workstation_user }}"
+    group: "{{ workstation_user }}"
+    mode: "0700"
+  become: false
+  tags: [obsidian]
+
+- name: Get latest Obsidian version
+  ansible.builtin.uri:
+    url: https://api.github.com/repos/obsidianmd/obsidian-releases/releases/latest
+    return_content: true
+  register: obsidian_release
+  when: obsidian_version == 'latest'
+  tags: [obsidian]
+
+- name: Set Obsidian version fact
+  ansible.builtin.set_fact:
+    obsidian_real_version: >-
+      {{
+        obsidian_release.json.tag_name | regex_replace('^v', '')
+        if obsidian_version == 'latest'
+        else obsidian_version
+      }}
+  tags: [obsidian]
+
+- name: Download Obsidian AppImage
+  ansible.builtin.get_url:
+    url: "https://github.com/obsidianmd/obsidian-releases/releases/download/v{{ obsidian_real_version }}/Obsidian-{{ obsidian_real_version }}.AppImage"
+    dest: "{{ workstation_home }}/.local/bin/obsidian.AppImage"
+    mode: "0755"
+    owner: "{{ workstation_user }}"
+    group: "{{ workstation_user }}"
+  become: false
+  tags: [obsidian]
+
+- name: Deploy Obsidian launch script
+  ansible.builtin.template:
+    src: obsidian-launch.sh.j2
+    dest: "{{ workstation_home }}/.local/bin/obsidian-launch.sh"
+    owner: "{{ workstation_user }}"
+    group: "{{ workstation_user }}"
+    mode: "0755"
+  become: false
+  tags: [obsidian, config]
+
+- name: Deploy Obsidian desktop file
+  ansible.builtin.template:
+    src: obsidian.desktop.j2
+    dest: "{{ workstation_home }}/.local/share/applications/obsidian-encrypted.desktop"
+    owner: "{{ workstation_user }}"
+    group: "{{ workstation_user }}"
+    mode: "0644"
+  become: false
+  tags: [obsidian, config]

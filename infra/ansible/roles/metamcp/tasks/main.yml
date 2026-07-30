@@ -1,0 +1,47 @@
+---
+# metamcp — MCP-агрегатор (MetaMCP)
+
+- name: Create MetaMCP stack directory
+  ansible.builtin.file:
+    path: "{{ metamcp_stack_dir }}"
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+  tags: [metamcp]
+
+- name: Create MetaMCP data directory
+  ansible.builtin.file:
+    path: "{{ metamcp_data_dir }}"
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+  tags: [metamcp]
+
+- name: Deploy MetaMCP docker-compose.yml
+  ansible.builtin.template:
+    src: docker-compose.yml.j2
+    dest: "{{ metamcp_stack_dir }}/docker-compose.yml"
+    owner: root
+    group: root
+    mode: "0644"
+  notify: Restart MetaMCP
+  tags: [metamcp, config]
+
+- name: Deploy MetaMCP .env
+  ansible.builtin.template:
+    src: .env.j2
+    dest: "{{ metamcp_stack_dir }}/.env"
+    owner: root
+    group: root
+    mode: "0600"
+  notify: Restart MetaMCP
+  tags: [metamcp, config]
+
+- name: Start MetaMCP
+  community.docker.docker_compose_v2:
+    project_src: "{{ metamcp_stack_dir }}"
+    state: present
+    pull: policy
+  tags: [metamcp]

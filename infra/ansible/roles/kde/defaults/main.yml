@@ -1,0 +1,35 @@
+---
+kde_sddm_theme: "breeze"
+kde_packages:
+  - kde-plasma-desktop
+  - plasma-workspace
+  - sddm
+  - konsole
+  - dolphin
+  - kate
+  - spectacle
+  - krunner
+  - kwalletmanager
+  - plasma-nm
+  - plasma-pa
+  - bluedevil
+  - powerdevil
+  - kde-config-screenlocker
+  - papirus-icon-theme
+  - breeze-gtk-theme
+  - kvantum
+
+# kwriteconfig5 настройки
+kde_kwrite_settings:
+  - file: kdeglobals
+    group: General
+    key: fixed
+    value: "'{{ kde_font_fixed }}'"
+  - file: kdeglobals
+    group: General
+    key: font
+    value: "'{{ kde_font_general }}'"
+  - file: kdeglobals
+    group: Icons
+    key: Theme
+    value: "{{ kde_icon_theme }}"

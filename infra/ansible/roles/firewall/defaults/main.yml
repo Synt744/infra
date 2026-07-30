@@ -1,0 +1,8 @@
+---
+firewall_default_incoming: "deny"
+firewall_default_outgoing: "allow"
+firewall_rules:
+  - port: "22"
+    proto: tcp
+    rule: allow
+    comment: "SSH"

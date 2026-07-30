@@ -1,0 +1,7 @@
+---
+galaxy_info:
+  role_name: firewall
+  description: "UFW firewall configuration"
+  min_ansible_version: "2.14"
+dependencies:
+  - role: security

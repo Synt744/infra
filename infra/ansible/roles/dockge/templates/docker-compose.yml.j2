@@ -1,0 +1,15 @@
+---
+# Managed by Ansible
+services:
+  dockge:
+    image: louislam/dockge:{{ dockge_version }}
+    container_name: dockge
+    restart: unless-stopped
+    ports:
+      - "{{ dockge_port }}:5001"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - {{ dockge_data_dir }}:/app/data
+      - {{ dockge_stack_dir }}:{{ dockge_stack_dir }}
+    environment:
+      DOCKGE_STACKS_DIR: {{ dockge_stack_dir }}

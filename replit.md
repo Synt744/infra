@@ -1,44 +1,51 @@
-# MCP Hub
+# Infra — Infrastructure as Code
 
-Самохостинговый агрегатор MCP-инструментов на базе MetaMCP. Несколько stdio-серверов (memory, puppeteer и др.) → один Streamable HTTP/SSE endpoint с Bearer-аутентификацией для OpenCode и Hermes.
+Полностью воспроизводимая Debian-рабочая станция на Ansible + Docker.  
+Один `bootstrap.sh` после чистой установки → полностью готовая система.
 
 ## Run & Operate
 
-- `pnpm --filter @workspace/api-server run dev` — запустить API-сервер (порт 5000)
-- `pnpm run typecheck` — полный typecheck по всем пакетам
-- `pnpm run build` — typecheck + сборка всех пакетов
-- `pnpm --filter @workspace/api-spec run codegen` — перегенерировать API-хуки из OpenAPI-спека
-- `pnpm --filter @workspace/db run push` — применить изменения схемы БД (dev only)
+- `pnpm --filter @workspace/api-server run dev` — API-сервер (порт 5000)
+- `pnpm run typecheck` — полный typecheck всех пакетов
+- `pnpm run build` — typecheck + сборка
+- `pnpm --filter @workspace/api-spec run codegen` — перегенерировать API-хуки
+- `pnpm --filter @workspace/db run push` — применить схему БД (dev only)
 - Required env: `DATABASE_URL` — строка подключения к Postgres
 
 ## Stack
 
 - pnpm workspaces, Node.js 24, TypeScript 5.9
-- API: Express 5
-- DB: PostgreSQL + Drizzle ORM
-- Validation: Zod (`zod/v4`), `drizzle-zod`
-- API codegen: Orval (from OpenAPI spec)
-- Build: esbuild (CJS bundle)
-- MCP Hub: MetaMCP (Docker Compose) в `mcp-hub/`
+- API: Express 5 / DB: PostgreSQL + Drizzle ORM
+- IaC: Ansible 2.14+ / Profiles: workstation, laptop, server, raspberry
+- MCP Hub: MetaMCP (Docker Compose)
+- AI agents: Hermes + OpenCode → MetaMCP hub
+- Desktop: KDE Plasma + Obsidian (gocryptfs vault)
+- Backup: Restic + systemd timer
 
 ## Where things live
 
-- `mcp-hub/` — Docker Compose стек MetaMCP + конфиги агентов + инструкции
-- `mcp-hub/README.md` — инструкция для человека (пошаговый деплой)
-- `mcp-hub/AGENTS.md` — инструкция для агентов (архитектурные решения, правила правок)
+- `infra/` — весь Infrastructure as Code
+  - `infra/scripts/bootstrap.sh` — точка входа после чистого Debian
+  - `infra/scripts/update-system.sh` — обновление без потери данных
+  - `infra/profiles/` — профили машин (workstation/laptop/server/raspberry)
+  - `infra/ansible/roles/` — 19 модульных ролей
+  - `infra/ansible/group_vars/all/main.yml` — единственный источник всех переменных
+  - `infra/ansible/group_vars/all/vault.yml.example` — шаблон секретов
+  - `infra/README.md` — инструкция для человека
+  - `infra/AGENTS.md` — инструкция для агентов
+  - `infra/docs/architecture.md` — архитектурные решения с обоснованиями
+- `mcp-hub/` — standalone Docker Compose для MetaMCP (без Ansible)
 - `artifacts/api-server/` — Express API-сервер
 - `artifacts/mockup-sandbox/` — Canvas/дизайн-окружение
 
 ## Architecture decisions
 
-- **MetaMCP вместо mcp-proxy/supergateway** — прокси пробрасывает только один stdio-сервер без агрегации; MetaMCP собирает несколько тулов в один endpoint.
-- **Изолированный Postgres** — `metamcp-pg` отдельный контейнер, не трогает боевой кластер.
-- **Streamable HTTP `/mcp` вместо SSE `/sse`** — в hermes-agent открытый баг на SSE (теряет session ID); `/mcp` надёжнее для обоих агентов.
-- **`APP_URL` — реальный IP, не localhost** — MetaMCP валидирует CORS по этому URL.
-
-## Product
-
-Инфраструктурный хаб: общая память и инструменты для агентов OpenCode и Hermes через единый авторизованный MCP-endpoint.
+- **Ansible + роли** — одна роль = одна область, идемпотентно, воспроизводимо
+- **MetaMCP вместо mcp-proxy** — агрегация N stdio-серверов в один endpoint
+- **`/mcp` не `/sse`** — hermes-agent баг на SSE-транспорте (Missing session ID)
+- **gocryptfs для Obsidian** — быстрее CryFS, лучше совместим с Restic
+- **Restic для бэкапа** — дедупликация, шифрование, sftp/S3, Debian пакет
+- **`APP_URL` = реальный IP** — MetaMCP валидирует CORS по этому URL
 
 ## User preferences
 
@@ -46,11 +53,15 @@ _Populate as you build._
 
 ## Gotchas
 
-- `APP_URL` в `.env` должен быть реальным IP/hostname, не `localhost` — иначе CORS-ошибки.
-- Используй `/mcp` endpoint, не `/sse` — баг в hermes-agent на SSE-транспорте.
-- Не трогай `.env` — только `.env.example`.
+- `APP_URL` в vault — реальный IP/hostname, не localhost
+- Используй `/mcp` endpoint, не `/sse` (баг в hermes-agent)
+- `vault.yml` в .gitignore — только `vault.yml.example` коммитится
+- `ansible.builtin.*` namespace обязателен для всех стандартных модулей
+- `scripts/bootstrap.sh` запускается от имени обычного пользователя, не root
 
 ## Pointers
 
-- See the `pnpm-workspace` skill for workspace structure, TypeScript setup, and package details
-- `mcp-hub/AGENTS.md` — правила для агентов по работе с MCP-хабом
+- `infra/AGENTS.md` — правила для агентов (читай перед редактированием ролей)
+- `infra/docs/architecture.md` — все архитектурные решения с обоснованиями
+- `infra/ansible/group_vars/all/main.yml` — все переменные здесь
+- See the `pnpm-workspace` skill for workspace structure and TypeScript details

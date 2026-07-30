@@ -1,0 +1,7 @@
+---
+galaxy_info:
+  role_name: dockge
+  description: "Dockge Docker Compose UI deployment"
+  min_ansible_version: "2.14"
+dependencies:
+  - role: docker

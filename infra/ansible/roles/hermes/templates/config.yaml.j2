@@ -1,0 +1,8 @@
+# Managed by Ansible — не редактируй вручную
+mcp_servers:
+  hub:
+    # Используй /mcp (Streamable HTTP), НЕ /sse!
+    # В hermes-agent открытый баг на SSE: теряет session ID → "Missing session ID"
+    url: "{{ hermes_mcp_hub_url }}"
+    headers:
+      Authorization: "Bearer {{ vault_hermes_mcp_hub_token }}"

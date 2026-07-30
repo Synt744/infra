@@ -1,0 +1,7 @@
+---
+galaxy_info:
+  role_name: metamcp
+  description: "MetaMCP MCP-hub deployment (aggregates multiple stdio MCP servers)"
+  min_ansible_version: "2.14"
+dependencies:
+  - role: docker

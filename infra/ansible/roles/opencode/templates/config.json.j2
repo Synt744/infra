@@ -1,0 +1,13 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "mcp": {
+    "hub": {
+      "type": "remote",
+      "url": "{{ opencode_mcp_hub_url }}",
+      "headers": {
+        "Authorization": "Bearer {{ vault_opencode_mcp_hub_token }}"
+      },
+      "enabled": true
+    }
+  }
+}

@@ -1,0 +1,2 @@
+- [Infra IaC project](infra-iac.md) — Ansible IaC для Debian рабочей станции: bootstrap.sh → 19 ролей → полная система
+- [MetaMCP hub rules](metamcp-hub.md) — MetaMCP агрегатор MCP-серверов: APP_URL не localhost, /mcp не /sse (hermes SSE bug)

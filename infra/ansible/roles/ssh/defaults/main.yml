@@ -1,0 +1,6 @@
+---
+ssh_key_type: "ed25519"
+ssh_port: 22
+ssh_permit_root_login: "no"
+ssh_password_auth: "no"
+ssh_public_keys: []

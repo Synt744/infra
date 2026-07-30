@@ -1,0 +1,56 @@
+---
+# dockge — веб-UI для управления Docker Compose стеками
+
+- name: Create Dockge stack directory
+  ansible.builtin.file:
+    path: "{{ dockge_stack_dir }}/dockge"
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+  tags: [dockge]
+
+- name: Create Dockge data directory
+  ansible.builtin.file:
+    path: "{{ dockge_data_dir }}"
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+  tags: [dockge]
+
+- name: Ensure stacks root directory exists
+  ansible.builtin.file:
+    path: "{{ dockge_stack_dir }}"
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+  tags: [dockge]
+
+- name: Deploy Dockge docker-compose.yml
+  ansible.builtin.template:
+    src: docker-compose.yml.j2
+    dest: "{{ dockge_stack_dir }}/dockge/docker-compose.yml"
+    owner: root
+    group: root
+    mode: "0644"
+  notify: Restart Dockge
+  tags: [dockge, config]
+
+- name: Deploy Dockge .env
+  ansible.builtin.template:
+    src: .env.j2
+    dest: "{{ dockge_stack_dir }}/dockge/.env"
+    owner: root
+    group: root
+    mode: "0600"
+  notify: Restart Dockge
+  tags: [dockge, config]
+
+- name: Start Dockge
+  community.docker.docker_compose_v2:
+    project_src: "{{ dockge_stack_dir }}/dockge"
+    state: present
+    pull: policy
+  tags: [dockge]

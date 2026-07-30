@@ -1,0 +1,6 @@
+---
+nodejs_version: "22"
+python_version: "3.12"
+uv_install: true
+pipx_install: true
+bun_install: false

@@ -1,0 +1,4 @@
+---
+updates_unattended_security: true
+updates_auto_reboot: false
+updates_auto_reboot_time: "03:00"

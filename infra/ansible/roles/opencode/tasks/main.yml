@@ -1,0 +1,29 @@
+---
+# opencode — установка и настройка OpenCode
+
+- name: Install OpenCode via npm
+  community.general.npm:
+    name: "opencode-ai"
+    global: true
+    state: present
+  tags: [opencode]
+
+- name: Create OpenCode config directory
+  ansible.builtin.file:
+    path: "{{ opencode_config_dir }}"
+    state: directory
+    owner: "{{ workstation_user }}"
+    group: "{{ workstation_user }}"
+    mode: "0700"
+  become: false
+  tags: [opencode]
+
+- name: Deploy OpenCode config
+  ansible.builtin.template:
+    src: config.json.j2
+    dest: "{{ opencode_config_dir }}/config.json"
+    owner: "{{ workstation_user }}"
+    group: "{{ workstation_user }}"
+    mode: "0600"
+  become: false
+  tags: [opencode, config]

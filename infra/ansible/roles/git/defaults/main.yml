@@ -1,0 +1,7 @@
+---
+# Значения берутся из group_vars/all/main.yml
+# Здесь — только переопределяемые дефолты роли
+git_editor: "nvim"
+git_default_branch: "main"
+git_pull_rebase: true
+git_sign_commits: false

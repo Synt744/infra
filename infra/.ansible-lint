@@ -1,0 +1,19 @@
+---
+profile: production
+
+exclude_paths:
+  - .cache/
+  - ansible/roles/*/tests/
+
+warn_list:
+  - yaml[line-length]
+
+skip_list:
+  - no-changed-when        # разрешено в обоснованных случаях (kwriteconfig5)
+
+use_default_rules: true
+
+mock_modules:
+  - community.docker.docker_compose_v2
+
+verbosity: 1

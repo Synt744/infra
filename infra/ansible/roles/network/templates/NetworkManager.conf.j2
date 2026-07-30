@@ -1,0 +1,9 @@
+# Managed by Ansible
+[main]
+plugins=ifupdown,keyfile
+
+[ifupdown]
+managed={{ network_manager_enabled | lower }}
+
+[device]
+wifi.scan-rand-mac-address=yes

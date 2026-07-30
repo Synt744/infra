@@ -1,0 +1,48 @@
+---
+# ssh — генерация ключей и настройка SSH
+
+- name: Install openssh-server
+  ansible.builtin.apt:
+    name: openssh-server
+    state: present
+  tags: [ssh]
+
+- name: Ensure .ssh directory exists for user
+  ansible.builtin.file:
+    path: "{{ workstation_home }}/.ssh"
+    state: directory
+    owner: "{{ workstation_user }}"
+    group: "{{ workstation_user }}"
+    mode: "0700"
+  become: false
+  tags: [ssh]
+
+- name: Generate SSH key if not exists
+  community.crypto.openssh_keypair:
+    path: "{{ workstation_home }}/.ssh/id_{{ ssh_key_type }}"
+    type: "{{ ssh_key_type }}"
+    comment: "{{ git_user_email | default(workstation_user + '@' + system_hostname) }}"
+    passphrase: "{{ vault_ssh_key_passphrase | default('') }}"
+    owner: "{{ workstation_user }}"
+  become: false
+  tags: [ssh]
+
+- name: Add authorized keys
+  ansible.posix.authorized_key:
+    user: "{{ workstation_user }}"
+    key: "{{ item }}"
+    state: present
+  loop: "{{ ssh_public_keys }}"
+  when: ssh_public_keys | length > 0
+  tags: [ssh]
+
+- name: Configure sshd
+  ansible.builtin.template:
+    src: sshd_config.j2
+    dest: /etc/ssh/sshd_config.d/99-workstation.conf
+    owner: root
+    group: root
+    mode: "0600"
+    validate: /usr/sbin/sshd -t -f %s
+  notify: Restart sshd
+  tags: [ssh, config]

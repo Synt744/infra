@@ -1,0 +1,37 @@
+---
+# firewall — UFW настройка и правила
+
+- name: Install UFW
+  ansible.builtin.apt:
+    name: ufw
+    state: present
+  tags: [firewall]
+
+- name: Set UFW default incoming policy
+  community.general.ufw:
+    direction: incoming
+    policy: "{{ firewall_default_incoming }}"
+  notify: Reload UFW
+  tags: [firewall]
+
+- name: Set UFW default outgoing policy
+  community.general.ufw:
+    direction: outgoing
+    policy: "{{ firewall_default_outgoing }}"
+  notify: Reload UFW
+  tags: [firewall]
+
+- name: Apply UFW rules
+  community.general.ufw:
+    rule: "{{ item.rule }}"
+    port: "{{ item.port | string }}"
+    proto: "{{ item.proto }}"
+    comment: "{{ item.comment | default('') }}"
+  loop: "{{ firewall_rules }}"
+  notify: Reload UFW
+  tags: [firewall]
+
+- name: Enable UFW
+  community.general.ufw:
+    state: enabled
+  tags: [firewall]

@@ -1,0 +1,7 @@
+---
+galaxy_info:
+  role_name: fonts
+  description: "System and Nerd Fonts installation"
+  min_ansible_version: "2.14"
+dependencies:
+  - role: common

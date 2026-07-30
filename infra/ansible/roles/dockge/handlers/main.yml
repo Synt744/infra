@@ -1,0 +1,6 @@
+---
+- name: Restart Dockge
+  community.docker.docker_compose_v2:
+    project_src: "{{ dockge_stack_dir }}/dockge"
+    state: present
+    recreate: always

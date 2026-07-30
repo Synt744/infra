@@ -1,0 +1,27 @@
+---
+# flatpak — установка Flatpak и приложений из Flathub
+
+- name: Install Flatpak
+  ansible.builtin.apt:
+    name: flatpak
+    state: present
+  tags: [flatpak]
+
+- name: Add Flathub remote
+  community.general.flatpak_remote:
+    name: flathub
+    state: present
+    flatpakrepo_url: https://dl.flathub.org/repo/flathub.flatpakrepo
+    method: user
+  become: false
+  tags: [flatpak]
+
+- name: Install Flatpak applications
+  community.general.flatpak:
+    name: "{{ item }}"
+    state: present
+    remote: flathub
+    method: user
+  become: false
+  loop: "{{ flatpak_apps }}"
+  tags: [flatpak, apps]

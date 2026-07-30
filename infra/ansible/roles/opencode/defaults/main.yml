@@ -1,0 +1,3 @@
+---
+# Переопределяется в group_vars/all/main.yml
+# opencode_mcp_hub_url задаётся через metamcp_port и ansible_default_ipv4

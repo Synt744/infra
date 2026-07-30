@@ -1,0 +1,30 @@
+---
+# git — установка и настройка git
+
+- name: Install git
+  ansible.builtin.apt:
+    name:
+      - git
+      - git-lfs
+    state: present
+  tags: [git]
+
+- name: Configure global gitconfig
+  ansible.builtin.template:
+    src: gitconfig.j2
+    dest: "{{ workstation_home }}/.gitconfig"
+    owner: "{{ workstation_user }}"
+    group: "{{ workstation_user }}"
+    mode: "0644"
+  become: false
+  tags: [git, config]
+
+- name: Ensure git global ignore file exists
+  ansible.builtin.template:
+    src: gitignore_global.j2
+    dest: "{{ workstation_home }}/.gitignore_global"
+    owner: "{{ workstation_user }}"
+    group: "{{ workstation_user }}"
+    mode: "0644"
+  become: false
+  tags: [git, config]

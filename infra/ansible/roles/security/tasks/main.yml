@@ -1,0 +1,54 @@
+---
+# security — базовое усиление безопасности
+
+- name: Install security packages
+  ansible.builtin.apt:
+    name:
+      - fail2ban
+      - unattended-upgrades
+      - apt-listchanges
+      - libpam-pwquality
+    state: present
+  tags: [security]
+
+- name: Configure fail2ban (SSH jail)
+  ansible.builtin.template:
+    src: jail.local.j2
+    dest: /etc/fail2ban/jail.local
+    owner: root
+    group: root
+    mode: "0644"
+  notify: Restart fail2ban
+  when: security_install_fail2ban | default(true)
+  tags: [security, fail2ban]
+
+- name: Enable and start fail2ban
+  ansible.builtin.service:
+    name: fail2ban
+    state: started
+    enabled: true
+  when: security_install_fail2ban | default(true)
+  tags: [security, fail2ban]
+
+- name: Set sysctl hardening parameters
+  ansible.posix.sysctl:
+    name: "{{ item.key }}"
+    value: "{{ item.value }}"
+    state: present
+    reload: true
+  loop:
+    - { key: "net.ipv4.tcp_syncookies",   value: "1" }
+    - { key: "net.ipv4.conf.all.rp_filter", value: "1" }
+    - { key: "net.ipv4.icmp_echo_ignore_broadcasts", value: "1" }
+    - { key: "kernel.dmesg_restrict",     value: "1" }
+    - { key: "fs.protected_hardlinks",    value: "1" }
+    - { key: "fs.protected_symlinks",     value: "1" }
+  tags: [security, sysctl]
+
+- name: Disable root login in PAM
+  ansible.builtin.lineinfile:
+    path: /etc/pam.d/login
+    line: "auth requisite pam_nologin.so"
+    state: present
+  when: security_disable_root_login | default(true)
+  tags: [security]

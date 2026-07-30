@@ -1,0 +1,4 @@
+---
+- name: Reconfigure SDDM
+  ansible.builtin.command: dpkg-reconfigure -f noninteractive sddm
+  changed_when: true

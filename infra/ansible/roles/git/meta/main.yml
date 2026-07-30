@@ -1,0 +1,7 @@
+---
+galaxy_info:
+  role_name: git
+  description: "Git installation and global configuration"
+  min_ansible_version: "2.14"
+dependencies:
+  - role: common

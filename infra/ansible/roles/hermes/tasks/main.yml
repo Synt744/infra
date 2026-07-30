@@ -1,0 +1,29 @@
+---
+# hermes — установка и настройка Hermes agent
+
+- name: Install Hermes via npm
+  community.general.npm:
+    name: "@nousresearch/hermes-agent"
+    global: true
+    state: present
+  tags: [hermes]
+
+- name: Create Hermes config directory
+  ansible.builtin.file:
+    path: "{{ hermes_config_dir }}"
+    state: directory
+    owner: "{{ workstation_user }}"
+    group: "{{ workstation_user }}"
+    mode: "0700"
+  become: false
+  tags: [hermes]
+
+- name: Deploy Hermes config
+  ansible.builtin.template:
+    src: config.yaml.j2
+    dest: "{{ hermes_config_dir }}/config.yaml"
+    owner: "{{ workstation_user }}"
+    group: "{{ workstation_user }}"
+    mode: "0600"
+  become: false
+  tags: [hermes, config]

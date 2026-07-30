@@ -1,0 +1,57 @@
+#!/usr/bin/env bash
+# Managed by Ansible — не редактируй вручную
+# Монтирует зашифрованный vault, запускает Obsidian, размонтирует после закрытия
+
+set -euo pipefail
+
+ENCRYPTED_DIR="{{ obsidian_vault_encrypted_dir }}"
+MOUNT_DIR="{{ obsidian_vault_mount_dir }}"
+OBSIDIAN_BIN="{{ workstation_home }}/.local/bin/obsidian.AppImage"
+
+# ─── Запрос пароля ───────────────────────────────────────────────────────────
+{% if obsidian_use_kdialog %}
+PASSWORD=$(kdialog --password "Obsidian Vault — введи пароль:" 2>/dev/null) || {
+  kdialog --sorry "Пароль не введён. Запуск отменён." 2>/dev/null
+  exit 1
+}
+{% else %}
+PASSWORD=$(zenity --password --title="Obsidian Vault" 2>/dev/null) || {
+  echo "Пароль не введён. Запуск отменён." >&2
+  exit 1
+}
+{% endif %}
+
+# ─── Монтирование ────────────────────────────────────────────────────────────
+{% if obsidian_crypto_backend == 'gocryptfs' %}
+echo "$PASSWORD" | gocryptfs "$ENCRYPTED_DIR" "$MOUNT_DIR" || {
+{% if obsidian_use_kdialog %}
+  kdialog --error "Не удалось смонтировать vault. Проверь пароль." 2>/dev/null
+{% else %}
+  zenity --error --text="Не удалось смонтировать vault. Проверь пароль." 2>/dev/null
+{% endif %}
+  exit 1
+}
+{% else %}
+echo "$PASSWORD" | cryfs "$ENCRYPTED_DIR" "$MOUNT_DIR" || {
+{% if obsidian_use_kdialog %}
+  kdialog --error "Не удалось смонтировать vault (CryFS). Проверь пароль." 2>/dev/null
+{% else %}
+  zenity --error --text="Не удалось смонтировать vault (CryFS)." 2>/dev/null
+{% endif %}
+  exit 1
+}
+{% endif %}
+
+unset PASSWORD
+
+# ─── Запуск Obsidian ─────────────────────────────────────────────────────────
+"$OBSIDIAN_BIN" --no-sandbox "$MOUNT_DIR" 2>/dev/null || true
+
+# ─── Размонтирование ─────────────────────────────────────────────────────────
+{% if obsidian_autoclose_on_exit %}
+{% if obsidian_crypto_backend == 'gocryptfs' %}
+fusermount -u "$MOUNT_DIR" 2>/dev/null || true
+{% else %}
+cryfs-unmount "$MOUNT_DIR" 2>/dev/null || true
+{% endif %}
+{% endif %}

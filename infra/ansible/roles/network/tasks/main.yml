@@ -1,0 +1,41 @@
+---
+# network — настройка NetworkManager, отключение /etc/network/interfaces
+
+- name: Install NetworkManager
+  ansible.builtin.apt:
+    name:
+      - network-manager
+      - network-manager-gnome
+    state: present
+  tags: [network]
+
+- name: Enable and start NetworkManager
+  ansible.builtin.service:
+    name: NetworkManager
+    state: started
+    enabled: true
+  tags: [network]
+
+- name: Disable /etc/network/interfaces to avoid conflict with NM
+  ansible.builtin.copy:
+    dest: /etc/network/interfaces
+    content: |
+      # Managed by Ansible — NetworkManager handles all interfaces
+      # This file is intentionally left minimal.
+      source /etc/network/interfaces.d/*
+    owner: root
+    group: root
+    mode: "0644"
+  when: network_interfaces_purge | default(true)
+  notify: Restart NetworkManager
+  tags: [network]
+
+- name: Configure NetworkManager to manage all devices
+  ansible.builtin.template:
+    src: NetworkManager.conf.j2
+    dest: /etc/NetworkManager/NetworkManager.conf
+    owner: root
+    group: root
+    mode: "0644"
+  notify: Restart NetworkManager
+  tags: [network, config]

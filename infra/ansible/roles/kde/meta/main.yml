@@ -1,0 +1,9 @@
+---
+galaxy_info:
+  role_name: kde
+  description: "KDE Plasma desktop installation and configuration"
+  min_ansible_version: "2.14"
+dependencies:
+  - role: common
+  - role: packages
+  - role: fonts

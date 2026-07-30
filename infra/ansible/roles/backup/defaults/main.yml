@@ -1,0 +1,14 @@
+---
+backup_tool: "restic"
+backup_schedule: "daily"
+backup_keep_daily: 7
+backup_keep_weekly: 4
+backup_keep_monthly: 3
+backup_paths:
+  - "/home"
+  - "/opt/data"
+backup_excludes:
+  - "/home/*/.cache"
+  - "/home/*/.local/share/Trash"
+  - "/opt/cache"
+  - "/opt/tmp"

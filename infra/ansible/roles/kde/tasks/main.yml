@@ -1,0 +1,45 @@
+---
+# kde — установка KDE Plasma и настройка рабочего стола
+
+- name: Install KDE Plasma and essentials
+  ansible.builtin.apt:
+    name: "{{ kde_packages }}"
+    state: present
+  tags: [kde, desktop]
+
+- name: Set default display manager to SDDM
+  ansible.builtin.debconf:
+    name: sddm
+    question: shared/default-x-display-manager
+    value: sddm
+    vtype: select
+  notify: Reconfigure SDDM
+  tags: [kde, sddm]
+
+- name: Enable SDDM service
+  ansible.builtin.service:
+    name: sddm
+    enabled: true
+  tags: [kde, sddm]
+
+- name: Deploy SDDM theme config
+  ansible.builtin.template:
+    src: sddm.conf.j2
+    dest: /etc/sddm.conf.d/10-workstation.conf
+    owner: root
+    group: root
+    mode: "0644"
+  notify: Reconfigure SDDM
+  tags: [kde, sddm]
+
+- name: Apply KDE settings via kwriteconfig5
+  ansible.builtin.command: >
+    kwriteconfig5
+    --file {{ item.file }}
+    --group {{ item.group }}
+    --key {{ item.key }}
+    {{ item.value }}
+  become: false
+  loop: "{{ kde_kwrite_settings }}"
+  changed_when: true
+  tags: [kde, config]

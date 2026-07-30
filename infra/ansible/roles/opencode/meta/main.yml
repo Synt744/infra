@@ -1,0 +1,7 @@
+---
+galaxy_info:
+  role_name: opencode
+  description: "OpenCode AI agent installation and MCP hub configuration"
+  min_ansible_version: "2.14"
+dependencies:
+  - role: ai

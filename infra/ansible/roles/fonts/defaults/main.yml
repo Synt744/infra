@@ -1,0 +1,9 @@
+---
+fonts_nerd_fonts:
+  - JetBrainsMono
+  - FiraCode
+fonts_system_packages:
+  - fonts-noto
+  - fonts-noto-cjk
+  - fonts-noto-color-emoji
+  - fonts-dejavu-core

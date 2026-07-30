@@ -1,0 +1,64 @@
+---
+# ai — базовый слой: Node.js, Python, uv, pipx, bun
+
+# ─── Node.js via NodeSource ──────────────────────────────────────────────────
+- name: Add NodeSource GPG key
+  ansible.builtin.get_url:
+    url: "https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key"
+    dest: /etc/apt/keyrings/nodesource.asc
+    mode: "0644"
+    force: false
+  tags: [ai, nodejs]
+
+- name: Add NodeSource apt repository
+  ansible.builtin.apt_repository:
+    repo: "deb [signed-by=/etc/apt/keyrings/nodesource.asc] https://deb.nodesource.com/node_{{ nodejs_version }}.x nodistro main"
+    state: present
+    filename: nodesource
+  tags: [ai, nodejs]
+
+- name: Install Node.js
+  ansible.builtin.apt:
+    name: nodejs
+    state: present
+    update_cache: true
+  tags: [ai, nodejs]
+
+# ─── Python ──────────────────────────────────────────────────────────────────
+- name: Install Python and pipx
+  ansible.builtin.apt:
+    name:
+      - "python{{ python_version }}"
+      - "python{{ python_version }}-venv"
+      - "python{{ python_version }}-dev"
+      - pipx
+    state: present
+  tags: [ai, python]
+
+- name: Ensure pipx path is in user PATH
+  ansible.builtin.lineinfile:
+    path: "{{ workstation_home }}/.bashrc"
+    line: 'export PATH="${HOME}/.local/bin:${PATH}"'
+    state: present
+  become: false
+  tags: [ai, python]
+
+# ─── uv (Rust-based Python package manager) ──────────────────────────────────
+- name: Install uv via official installer
+  ansible.builtin.shell: |
+    curl -LsSf https://astral.sh/uv/install.sh | sh
+  args:
+    creates: "{{ workstation_home }}/.cargo/bin/uv"
+  become: false
+  when: uv_install | default(true)
+  tags: [ai, uv]
+
+# ─── Bun ─────────────────────────────────────────────────────────────────────
+- name: Install Bun via official installer
+  ansible.builtin.shell: |
+    curl -fsSL https://bun.sh/install | bash
+  args:
+    creates: "{{ workstation_home }}/.bun/bin/bun"
+  become: false
+  when: bun_install | default(false)
+  tags: [ai, bun]

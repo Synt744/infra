@@ -1,0 +1,37 @@
+---
+# fonts — системные шрифты и Nerd Fonts
+
+- name: Install system font packages
+  ansible.builtin.apt:
+    name: "{{ fonts_system_packages }}"
+    state: present
+  tags: [fonts]
+
+- name: Create user fonts directory
+  ansible.builtin.file:
+    path: "{{ workstation_home }}/.local/share/fonts"
+    state: directory
+    owner: "{{ workstation_user }}"
+    group: "{{ workstation_user }}"
+    mode: "0755"
+  become: false
+  tags: [fonts]
+
+- name: Download and install Nerd Fonts
+  ansible.builtin.unarchive:
+    src: "https://github.com/ryanoasis/nerd-fonts/releases/latest/download/{{ item }}.tar.xz"
+    dest: "{{ workstation_home }}/.local/share/fonts/"
+    remote_src: true
+    owner: "{{ workstation_user }}"
+    group: "{{ workstation_user }}"
+    creates: "{{ workstation_home }}/.local/share/fonts/{{ item }}NerdFont-Regular.ttf"
+  become: false
+  loop: "{{ fonts_nerd_fonts }}"
+  notify: Refresh font cache
+  tags: [fonts]
+
+- name: Refresh font cache
+  ansible.builtin.command: fc-cache -fv
+  become: false
+  changed_when: true
+  tags: [fonts]

@@ -1,0 +1,5 @@
+---
+metamcp_version: "latest"
+metamcp_port: 12008
+metamcp_postgres_user: "metamcp_user"
+metamcp_postgres_db: "metamcp_db"

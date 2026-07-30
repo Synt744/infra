@@ -1,0 +1,5 @@
+---
+obsidian_version: "latest"
+obsidian_crypto_backend: "gocryptfs"
+obsidian_autoclose_on_exit: true
+obsidian_use_kdialog: true

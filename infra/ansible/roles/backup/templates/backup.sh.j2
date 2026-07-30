@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+# Managed by Ansible
+set -euo pipefail
+set -a; source /etc/restic/restic.env; set +a
+
+restic backup \
+{% for path in backup_paths %}
+  {{ path }} \
+{% endfor %}
+{% for excl in backup_excludes %}
+  --exclude="{{ excl }}" \
+{% endfor %}
+  --verbose
+
+restic forget \
+  --keep-daily {{ backup_keep_daily }} \
+  --keep-weekly {{ backup_keep_weekly }} \
+  --keep-monthly {{ backup_keep_monthly }} \
+  --prune

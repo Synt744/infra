@@ -1,0 +1,59 @@
+# Managed by Ansible — не редактируй вручную
+[user]
+    name  = {{ git_user_name }}
+    email = {{ git_user_email }}
+{% if git_sign_commits %}
+    signingkey = {{ git_signing_key | default('') }}
+[commit]
+    gpgsign = true
+{% endif %}
+
+[core]
+    editor         = {{ git_editor }}
+    autocrlf       = input
+    eol            = lf
+    excludesfile   = ~/.gitignore_global
+    pager          = delta
+
+[init]
+    defaultBranch = {{ git_default_branch }}
+
+[pull]
+    rebase = {{ git_pull_rebase | lower }}
+
+[push]
+    autoSetupRemote = true
+    default         = current
+
+[fetch]
+    prune = true
+
+[rebase]
+    autoStash = true
+
+[merge]
+    conflictStyle = zdiff3
+
+[diff]
+    algorithm      = histogram
+    colorMoved     = default
+
+[delta]
+    navigate   = true
+    light      = false
+    side-by-side = true
+    line-numbers = true
+
+[alias]
+    st  = status -sb
+    co  = checkout
+    br  = branch
+    lg  = log --oneline --graph --decorate --all
+    undo = reset HEAD~1 --mixed
+    fixup = commit --amend --no-edit
+
+[credential]
+    helper = store
+
+[color]
+    ui = auto
