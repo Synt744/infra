@@ -2,7 +2,7 @@
 # profiles/raspberry.yml — Raspberry Pi (ARM, минимальный набор)
 # Без GUI, без тяжёлых AI-инструментов; только base + docker + security
 
-- import_playbook: ansible/playbooks/workstation.yml
+- import_playbook: ../ansible/playbooks/workstation.yml
   vars:
     install_common: true
     install_packages: true

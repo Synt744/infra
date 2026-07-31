@@ -2,7 +2,7 @@
 # profiles/laptop.yml — Ноутбук
 # Отличия от workstation: backup включён, MetaMCP опционален, power management
 
-- import_playbook: ansible/playbooks/workstation.yml
+- import_playbook: ../ansible/playbooks/workstation.yml
   vars:
     install_common: true
     install_packages: true

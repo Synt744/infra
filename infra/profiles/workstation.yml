@@ -2,7 +2,7 @@
 # profiles/workstation.yml — Домашняя рабочая станция
 # Полный набор компонентов: KDE, Docker, AI, Obsidian
 
-- import_playbook: ansible/playbooks/workstation.yml
+- import_playbook: ../ansible/playbooks/workstation.yml
   vars:
     install_common: true
     install_packages: true

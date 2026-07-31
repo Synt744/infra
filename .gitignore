@@ -1,49 +1,50 @@
-# See https://docs.github.com/en/get-started/getting-started-with-git/ignoring-files for more about ignoring files.
+# =============================================================================
+# Replit workspace — файлы окружения, не относящиеся к проекту
+# =============================================================================
 
-# compiled output
-dist
-tmp
-out-tsc
+# Replit-специфичные конфиги
+/.replit
+/.replitignore
+/.npmrc
+/.cache/
+/.local/
+
+# Агентская память (внутренняя)
+/.agents/
+
+# pnpm-монорепо (Replit scaffolding, не часть IaC)
+/package.json
+/pnpm-lock.yaml
+/pnpm-workspace.yaml
+/tsconfig.base.json
+/tsconfig.json
+/node_modules/
+
+# Replit артефакты (веб-приложения, не связанные с IaC)
+/artifacts/
+
+# Вспомогательные библиотеки Replit workspace
+/lib/
+/scripts/
+
+# Прикреплённые файлы из чата
+/attached_assets/
+
+# =============================================================================
+# Общее
+# =============================================================================
 *.tsbuildinfo
-.expo
-.expo-shared
-
-# dependencies
-node_modules
-
-# IDEs and editors
-/.idea
-.project
-.classpath
-.c9/
-*.launch
-.settings/
-*.sublime-workspace
-
-# IDE - VSCode
-.vscode/*
-!.vscode/settings.json
-!.vscode/tasks.json
-!.vscode/launch.json
-!.vscode/extensions.json
-
-# misc
-/.sass-cache
-/connect.lock
-/coverage
-/libpeerconnection.log
-npm-debug.log
-yarn-error.log
-testem.log
-/typings
-
-# System Files
+dist/
+tmp/
+out-tsc/
 .DS_Store
 Thumbs.db
+.expo/
+.expo-shared/
 
-.cursor/rules/nx-rules.mdc
-.github/instructions/nx.instructions.md
-
-# Replit
-.cache/
-.local/
+# =============================================================================
+# Ansible (дублируется в infra/.gitignore, но на случай запуска из корня)
+# =============================================================================
+*.retry
+infra/ansible/group_vars/all/vault.yml
+infra/**/.env
