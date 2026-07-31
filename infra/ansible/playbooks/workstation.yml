@@ -95,6 +95,15 @@
       tags: [security, firewall]
       when: install_security | default(true) and install_firewall | default(true)
 
+    # ── Dashboard стек ───────────────────────────────────────────────────────
+    - role: homepage
+      tags: [docker, homepage, dashboard]
+      when: install_docker | default(true) and install_homepage | default(false)
+
+    - role: uptime-kuma
+      tags: [docker, uptime-kuma, dashboard]
+      when: install_docker | default(true) and install_uptime_kuma | default(false)
+
     # ── Обслуживание ─────────────────────────────────────────────────────────
     - role: backup
       tags: [backup]

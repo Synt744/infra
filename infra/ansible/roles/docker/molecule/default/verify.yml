@@ -1,0 +1,32 @@
+---
+- name: Verify docker role
+  hosts: all
+  become: true
+  tasks:
+    - name: Check docker is installed
+      ansible.builtin.command: docker --version
+      register: docker_version
+      changed_when: false
+
+    - name: Assert docker is installed
+      ansible.builtin.assert:
+        that: docker_version.rc == 0
+        fail_msg: "Docker is not installed"
+
+    - name: Check docker service is running
+      ansible.builtin.service_facts:
+
+    - name: Assert docker service is active
+      ansible.builtin.assert:
+        that: ansible_facts.services['docker.service'].state == 'running'
+        fail_msg: "Docker service is not running"
+
+    - name: Check daemon.json exists
+      ansible.builtin.stat:
+        path: /etc/docker/daemon.json
+      register: daemon_json
+
+    - name: Assert daemon.json was created
+      ansible.builtin.assert:
+        that: daemon_json.stat.exists
+        fail_msg: "daemon.json was not created"

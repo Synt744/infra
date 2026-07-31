@@ -1,0 +1,13 @@
+# Managed by Ansible
+services:
+  homepage:
+    image: ghcr.io/gethomepage/homepage:{{ homepage_version }}
+    container_name: homepage
+    restart: unless-stopped
+    ports:
+      - "{{ homepage_port }}:3000"
+    volumes:
+      - {{ homepage_data_dir }}:/app/config
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    environment:
+      HOMEPAGE_ALLOWED_HOSTS: "{{ ansible_default_ipv4.address }}:{{ homepage_port }},localhost:{{ homepage_port }}"

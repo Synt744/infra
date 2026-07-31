@@ -1,0 +1,7 @@
+---
+galaxy_info:
+  role_name: uptime_kuma
+  description: Uptime Kuma — мониторинг аптайма сервисов
+  min_ansible_version: "2.14"
+dependencies:
+  - role: docker

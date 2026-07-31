@@ -1,0 +1,11 @@
+---
+- name: Converge
+  hosts: all
+  become: true
+  vars:
+    security_disable_root_login: false   # не ломаем тест-контейнер
+    security_install_fail2ban: true
+    security_install_rkhunter: false
+    security_umask: "027"
+  roles:
+    - role: security

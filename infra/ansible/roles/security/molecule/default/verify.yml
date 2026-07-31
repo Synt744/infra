@@ -1,0 +1,33 @@
+---
+- name: Verify security role
+  hosts: all
+  become: true
+  tasks:
+    - name: Check fail2ban is installed
+      ansible.builtin.package_facts:
+        manager: apt
+
+    - name: Assert fail2ban is installed
+      ansible.builtin.assert:
+        that: "'fail2ban' in ansible_facts.packages"
+        fail_msg: "fail2ban is not installed"
+
+    - name: Check jail.local exists
+      ansible.builtin.stat:
+        path: /etc/fail2ban/jail.local
+      register: jail_local
+
+    - name: Assert jail.local was created
+      ansible.builtin.assert:
+        that: jail_local.stat.exists
+        fail_msg: "jail.local was not created by template"
+
+    - name: Check sysctl hardening file exists
+      ansible.builtin.stat:
+        path: /etc/sysctl.d/99-hardening.conf
+      register: sysctl_file
+
+    - name: Assert sysctl hardening was applied
+      ansible.builtin.assert:
+        that: sysctl_file.stat.exists
+        fail_msg: "sysctl hardening config was not created"

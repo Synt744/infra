@@ -1,0 +1,13 @@
+---
+# CI-only fake vault vars — никогда не используются на живых машинах
+# Нужны только для --syntax-check без реального vault.yml
+vault_git_user_name: "CI User"
+vault_git_user_email: "ci@example.com"
+vault_metamcp_postgres_password: "ci_fake_password"
+vault_metamcp_better_auth_secret: "ci_fake_secret_32chars_xxxxxxxxxxx"
+vault_hermes_mcp_hub_token: "ci_fake_token"
+vault_opencode_mcp_hub_token: "ci_fake_token"
+vault_backup_password: "ci_fake_backup_password"
+vault_backup_repository: "sftp://ci@ci.example.com:/backups"
+vault_homepage_name: "CI Home"
+vault_uptime_kuma_domain: "ci.example.com"

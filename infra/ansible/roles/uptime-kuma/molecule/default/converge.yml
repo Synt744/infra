@@ -1,0 +1,19 @@
+---
+- name: Converge
+  hosts: all
+  become: true
+  vars:
+    stacks_dir: "/opt/stacks"
+    data_dir: "/opt/data"
+    uptime_kuma_port: 3001
+  pre_tasks:
+    - name: Create /opt dirs for test
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: directory
+        mode: "0755"
+      loop:
+        - /opt/stacks
+        - /opt/data
+  roles:
+    - role: uptime-kuma

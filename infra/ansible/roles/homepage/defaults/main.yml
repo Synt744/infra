@@ -1,0 +1,10 @@
+---
+homepage_version: "latest"
+homepage_port: 3000
+homepage_stack_dir: "{{ stacks_dir }}/homepage"
+homepage_data_dir: "{{ data_dir }}/homepage"
+homepage_name: "{{ vault_homepage_name | default('Home') }}"
+# Ссылки на другие сервисы — подставляются в services.yaml
+homepage_dockge_url: "http://{{ ansible_default_ipv4.address }}:{{ dockge_port }}"
+homepage_metamcp_url: "http://{{ ansible_default_ipv4.address }}:{{ metamcp_port }}"
+homepage_uptime_kuma_url: "http://{{ ansible_default_ipv4.address }}:{{ uptime_kuma_port }}"

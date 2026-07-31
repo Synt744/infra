@@ -1,0 +1,47 @@
+---
+- name: Converge
+  hosts: all
+  become: true
+  vars:
+    stacks_dir: "/opt/stacks"
+    data_dir: "/opt/data"
+    homepage_port: 3000
+    homepage_name: "Test Home"
+    dockge_port: 5001
+    metamcp_port: 12008
+    uptime_kuma_port: 3001
+    install_metamcp: false
+    # Fake ansible_default_ipv4 для шаблонов
+    ansible_default_ipv4:
+      address: "127.0.0.1"
+  pre_tasks:
+    - name: Create /opt dirs for test
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: directory
+        mode: "0755"
+      loop:
+        - /opt/stacks
+        - /opt/data
+  roles:
+    - role: homepage
+      vars:
+        # skip docker compose start in molecule
+        ansible_skip_tags: []
+  tasks:
+    # Molecule: проверяем только деплой файлов, не запуск контейнера
+    - name: Verify config files were deployed
+      ansible.builtin.stat:
+        path: "{{ item }}"
+      register: cfg_files
+      loop:
+        - /opt/stacks/homepage/docker-compose.yml
+        - /opt/data/homepage/settings.yaml
+        - /opt/data/homepage/services.yaml
+        - /opt/data/homepage/widgets.yaml
+
+    - name: Assert all config files exist
+      ansible.builtin.assert:
+        that: item.stat.exists
+        fail_msg: "Missing: {{ item.item }}"
+      loop: "{{ cfg_files.results }}"

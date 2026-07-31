@@ -1,0 +1,5 @@
+---
+uptime_kuma_version: "latest"
+uptime_kuma_port: 3001
+uptime_kuma_stack_dir: "{{ stacks_dir }}/uptime-kuma"
+uptime_kuma_data_dir: "{{ data_dir }}/uptime-kuma"

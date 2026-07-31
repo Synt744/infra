@@ -1,0 +1,17 @@
+---
+- name: Converge
+  hosts: all
+  become: true
+  vars:
+    system_locale: "en_US.UTF-8"
+    system_timezone: "UTC"
+    system_hostname: "test-instance"
+    workstation_user: "root"
+    workstation_home: "/root"
+    stacks_dir: "/opt/stacks"
+    data_dir: "/opt/data"
+    backups_dir: "/opt/backups"
+    cache_dir: "/opt/cache"
+    tmp_dir: "/opt/tmp"
+  roles:
+    - role: common

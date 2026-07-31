@@ -1,0 +1,34 @@
+---
+- name: Verify uptime-kuma role
+  hosts: all
+  become: true
+  tasks:
+    - name: Check stack directory exists
+      ansible.builtin.stat:
+        path: /opt/stacks/uptime-kuma
+      register: stack_dir
+
+    - name: Assert stack directory was created
+      ansible.builtin.assert:
+        that: stack_dir.stat.isdir
+        fail_msg: "Uptime Kuma stack directory not found"
+
+    - name: Check data directory exists
+      ansible.builtin.stat:
+        path: /opt/data/uptime-kuma
+      register: data_dir_stat
+
+    - name: Assert data directory was created
+      ansible.builtin.assert:
+        that: data_dir_stat.stat.isdir
+        fail_msg: "Uptime Kuma data directory not found"
+
+    - name: Check docker-compose.yml exists
+      ansible.builtin.stat:
+        path: /opt/stacks/uptime-kuma/docker-compose.yml
+      register: compose_file
+
+    - name: Assert compose file was deployed
+      ansible.builtin.assert:
+        that: compose_file.stat.exists
+        fail_msg: "docker-compose.yml was not deployed"

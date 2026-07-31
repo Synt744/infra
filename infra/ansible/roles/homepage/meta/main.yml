@@ -1,0 +1,8 @@
+---
+galaxy_info:
+  role_name: homepage
+  description: Homepage dashboard — стартовая страница со всеми сервисами
+  min_ansible_version: "2.14"
+dependencies:
+  - role: docker
+  - role: dockge

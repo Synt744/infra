@@ -42,6 +42,8 @@ install_security: true
 install_firewall: true
 install_backup: false       # требует настройки бэкап-хоста
 install_updates: true
+install_homepage: true
+install_uptime_kuma: true
 
 # ─── Git ─────────────────────────────────────────────────────────────────────
 git_user_name: "{{ vault_git_user_name }}"
@@ -165,6 +167,14 @@ firewall_rules:
     proto: tcp
     rule: allow
     comment: "Dockge"
+  - port: "{{ homepage_port }}"
+    proto: tcp
+    rule: allow
+    comment: "Homepage"
+  - port: "{{ uptime_kuma_port }}"
+    proto: tcp
+    rule: allow
+    comment: "Uptime Kuma"
 
 # ─── Backup (Restic) ─────────────────────────────────────────────────────────
 backup_tool: "restic"     # restic | borg
@@ -181,6 +191,19 @@ backup_excludes:
   - "{{ workstation_home }}/.cache"
   - "{{ workstation_home }}/.local/share/Trash"
 # backup_repository, vault_backup_password — в vault.yml
+
+# ─── Homepage ────────────────────────────────────────────────────────────────
+homepage_version: "latest"
+homepage_port: 3000
+homepage_stack_dir: "{{ stacks_dir }}/homepage"
+homepage_data_dir: "{{ data_dir }}/homepage"
+homepage_name: "{{ vault_homepage_name | default('Home') }}"
+
+# ─── Uptime Kuma ─────────────────────────────────────────────────────────────
+uptime_kuma_version: "latest"
+uptime_kuma_port: 3001
+uptime_kuma_stack_dir: "{{ stacks_dir }}/uptime-kuma"
+uptime_kuma_data_dir: "{{ data_dir }}/uptime-kuma"
 
 # ─── Updates ─────────────────────────────────────────────────────────────────
 updates_unattended_security: true

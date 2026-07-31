@@ -1,0 +1,16 @@
+---
+- name: Converge
+  hosts: all
+  become: true
+  vars:
+    workstation_user: "root"
+    docker_edition: "ce"
+    docker_users:
+      - root
+    docker_daemon_options:
+      log-driver: "json-file"
+      log-opts:
+        max-size: "10m"
+        max-file: "3"
+  roles:
+    - role: docker

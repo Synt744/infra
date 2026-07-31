@@ -1,0 +1,23 @@
+# Managed by Ansible
+---
+- Infrastructure:
+    - Dockge:
+        icon: docker.png
+        href: {{ homepage_dockge_url }}
+        description: Docker Compose manager
+        ping: {{ homepage_dockge_url }}
+
+    - Uptime Kuma:
+        icon: uptime-kuma.png
+        href: {{ homepage_uptime_kuma_url }}
+        description: Service monitoring
+        ping: {{ homepage_uptime_kuma_url }}
+
+{% if install_metamcp | default(false) %}
+- AI:
+    - MetaMCP:
+        icon: mcp.png
+        href: {{ homepage_metamcp_url }}
+        description: MCP hub — агрегатор AI-инструментов
+        ping: {{ homepage_metamcp_url }}
+{% endif %}

@@ -1,0 +1,50 @@
+---
+name: Molecule Tests
+
+on:
+  push:
+    paths:
+      - "infra/ansible/roles/**"
+      - ".github/workflows/molecule.yml"
+  pull_request:
+    paths:
+      - "infra/ansible/roles/**"
+      - ".github/workflows/molecule.yml"
+
+jobs:
+  molecule:
+    name: "molecule / ${{ matrix.role }}"
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        role:
+          - common
+          - docker
+          - security
+          - firewall
+          - homepage
+          - uptime-kuma
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install Ansible, Molecule, and Docker driver
+        run: |
+          pip install ansible molecule molecule-plugins[docker] docker
+
+      - name: Install required collections
+        run: |
+          ansible-galaxy collection install community.docker community.general
+        working-directory: infra
+
+      - name: Run Molecule tests
+        run: molecule test
+        working-directory: infra/ansible/roles/${{ matrix.role }}
+        env:
+          PY_COLORS: "1"
+          ANSIBLE_FORCE_COLOR: "1"

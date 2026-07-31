@@ -1,0 +1,31 @@
+---
+- name: Verify common role
+  hosts: all
+  become: true
+  tasks:
+    - name: Check /opt directories exist
+      ansible.builtin.stat:
+        path: "{{ item }}"
+      register: opt_dirs
+      loop:
+        - /opt/stacks
+        - /opt/data
+        - /opt/backups
+        - /opt/cache
+        - /opt/tmp
+
+    - name: Assert /opt directories were created
+      ansible.builtin.assert:
+        that: item.stat.isdir
+        fail_msg: "Directory {{ item.item }} does not exist"
+      loop: "{{ opt_dirs.results }}"
+
+    - name: Check timezone
+      ansible.builtin.command: timedatectl show --property=Timezone --value
+      register: tz_result
+      changed_when: false
+
+    - name: Assert timezone is UTC
+      ansible.builtin.assert:
+        that: tz_result.stdout == "UTC"
+        fail_msg: "Timezone is {{ tz_result.stdout }}, expected UTC"

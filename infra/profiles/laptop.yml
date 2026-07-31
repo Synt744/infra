@@ -24,3 +24,5 @@
     install_firewall: true
     install_backup: true
     install_updates: true
+    install_homepage: false   # хаб живёт на основной машине
+    install_uptime_kuma: false

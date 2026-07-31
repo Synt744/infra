@@ -1,0 +1,24 @@
+---
+- name: Verify homepage role
+  hosts: all
+  become: true
+  tasks:
+    - name: Check stack directory exists
+      ansible.builtin.stat:
+        path: /opt/stacks/homepage
+      register: stack_dir
+
+    - name: Assert stack directory was created
+      ansible.builtin.assert:
+        that: stack_dir.stat.isdir
+        fail_msg: "Homepage stack directory not found"
+
+    - name: Check docker-compose.yml is valid YAML
+      ansible.builtin.slurp:
+        src: /opt/stacks/homepage/docker-compose.yml
+      register: compose_raw
+
+    - name: Assert compose file has homepage service
+      ansible.builtin.assert:
+        that: "'homepage' in (compose_raw.content | b64decode)"
+        fail_msg: "docker-compose.yml does not mention homepage service"

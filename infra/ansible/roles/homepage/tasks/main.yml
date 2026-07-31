@@ -1,0 +1,79 @@
+---
+# homepage — стартовая страница со всеми Docker-сервисами
+
+- name: Create Homepage stack directory
+  ansible.builtin.file:
+    path: "{{ homepage_stack_dir }}"
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+  tags: [homepage]
+
+- name: Create Homepage config directory
+  ansible.builtin.file:
+    path: "{{ homepage_data_dir }}"
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+  tags: [homepage]
+
+- name: Deploy Homepage docker-compose.yml
+  ansible.builtin.template:
+    src: docker-compose.yml.j2
+    dest: "{{ homepage_stack_dir }}/docker-compose.yml"
+    owner: root
+    group: root
+    mode: "0644"
+  notify: Restart Homepage
+  tags: [homepage, config]
+
+- name: Deploy Homepage settings.yaml
+  ansible.builtin.template:
+    src: settings.yaml.j2
+    dest: "{{ homepage_data_dir }}/settings.yaml"
+    owner: root
+    group: root
+    mode: "0644"
+  notify: Restart Homepage
+  tags: [homepage, config]
+
+- name: Deploy Homepage services.yaml
+  ansible.builtin.template:
+    src: services.yaml.j2
+    dest: "{{ homepage_data_dir }}/services.yaml"
+    owner: root
+    group: root
+    mode: "0644"
+  notify: Restart Homepage
+  tags: [homepage, config]
+
+- name: Deploy Homepage widgets.yaml
+  ansible.builtin.template:
+    src: widgets.yaml.j2
+    dest: "{{ homepage_data_dir }}/widgets.yaml"
+    owner: root
+    group: root
+    mode: "0644"
+  notify: Restart Homepage
+  tags: [homepage, config]
+
+- name: Deploy Homepage bookmarks.yaml (empty placeholder)
+  ansible.builtin.copy:
+    content: |
+      # Managed by Ansible
+      ---
+    dest: "{{ homepage_data_dir }}/bookmarks.yaml"
+    owner: root
+    group: root
+    mode: "0644"
+    force: false   # не перезаписывать если пользователь редактировал вручную
+  tags: [homepage, config]
+
+- name: Start Homepage
+  community.docker.docker_compose_v2:
+    project_src: "{{ homepage_stack_dir }}"
+    state: present
+    pull: policy
+  tags: [homepage]
